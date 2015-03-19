@@ -13,8 +13,8 @@ findJar(){
 }
 
 doStop(){
-	kill $(cat $SERVER_PID); rm $SERVER_PID
-	kill $(cat $REGISTRY_PID); rm $REGISTRY_PID
+	kill $(cat $SERVER_PID); rm -f $SERVER_PID
+	kill $(cat $REGISTRY_PID); rm -f $REGISTRY_PID
 }
 trap doStop SIGTERM EXIT
 
@@ -34,8 +34,9 @@ echo $(jps -v|grep RegistryImpl|awk '{print $1}')>$REGISTRY_PID
 
 $javaCmd \
 	-Djava.security.policy=server.policy \
-	-jar ${jarFile} \
-	"$*" &
+	${1} \
+	-jar ${jarFile} &
+
 echo $! > $SERVER_PID
 
 wait $(cat $SERVER_PID)

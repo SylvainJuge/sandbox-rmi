@@ -1,16 +1,18 @@
 package sandbox.rmi.server;
 
 import sandbox.rmi.common.HelloRMI;
+import sandbox.rmi.common.Service;
 
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HelloServer implements HelloRMI {
 
-	public static final String OBJECT_NAME = "hello-service";
+
 
 	public static void main(String[] args) {
 
@@ -40,7 +42,7 @@ public class HelloServer implements HelloRMI {
 			registry = LocateRegistry.getRegistry();
 
 
-			registry.rebind(OBJECT_NAME, remote);
+			registry.rebind(Service.getName(), remote);
 
 		} catch (RemoteException e) {
 			throw new RuntimeException(e);
@@ -55,7 +57,7 @@ public class HelloServer implements HelloRMI {
 		}
 
 		try {
-			registry.unbind(OBJECT_NAME);
+			registry.unbind(Service.getName());
 		} catch (RemoteException | NotBoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -63,9 +65,23 @@ public class HelloServer implements HelloRMI {
 
 	}
 
+	private final Random random;
+
+	public HelloServer(){
+		random = new Random();
+	}
 
 	@Override
 	public String getHello(String name) {
+		long rand = Math.abs(random.nextLong() % 1_000);
+		if (rand % 10 == 0) {
+			throw new RuntimeException("random failure");
+		}
+		try {
+			Thread.sleep(rand);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 		return String.format("hello %s", name);
 	}
 }
