@@ -12,6 +12,8 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class HelloClient {
 
+	public static final String OBJECT_NAME = "hello-service";
+
 	public static void main(String[] args) {
 		SecurityManager securityManager = System.getSecurityManager();
 		if (null == securityManager) {
@@ -19,13 +21,13 @@ public class HelloClient {
 		}
 
 		try {
-			Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+			Registry registry = LocateRegistry.getRegistry();
 
 			for (String object : registry.list()) {
 				System.out.println(String.format("remote object %s", object));
 			}
 
-			HelloRMI server = (HelloRMI) registry.lookup("hello-server");
+			HelloRMI server = (HelloRMI) registry.lookup(OBJECT_NAME);
 			System.out.println(server.getHello("john"));
 
 

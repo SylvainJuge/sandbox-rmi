@@ -2,9 +2,7 @@ package sandbox.rmi.server;
 
 import sandbox.rmi.common.HelloRMI;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -13,7 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HelloServer implements HelloRMI {
 
 	public static final String OBJECT_NAME = "hello-service";
-	public static final int SERVER_PORT = 40000;
 
 	public static void main(String[] args) {
 
@@ -22,6 +19,7 @@ public class HelloServer implements HelloRMI {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
+				System.out.println("Stop server");
 				shutdown.set(true);
 			}
 		});
@@ -37,18 +35,14 @@ public class HelloServer implements HelloRMI {
 
 		Registry registry;
 		try {
-			UnicastRemoteObject.exportObject(server, 0); // TODO : choix du port ?
+			HelloRMI remote = (HelloRMI) UnicastRemoteObject.exportObject(server, 0);
 
-			// 0 : port anonyme
-			// >0 : port spécifique
+			registry = LocateRegistry.getRegistry();
 
-			// registry port ?
 
-			// get local registry on default port : 1099
-			registry = LocateRegistry.getRegistry(SERVER_PORT);
-			registry.bind(OBJECT_NAME, server);
+			registry.rebind(OBJECT_NAME, remote);
 
-		} catch (RemoteException | AlreadyBoundException e) {
+		} catch (RemoteException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -71,7 +65,7 @@ public class HelloServer implements HelloRMI {
 
 
 	@Override
-	public String getHello(String name) throws RemoteException {
+	public String getHello(String name) {
 		return String.format("hello %s", name);
 	}
 }

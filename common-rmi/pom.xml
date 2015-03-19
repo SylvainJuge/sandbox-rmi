@@ -10,7 +10,6 @@
 	</parent>
 
 	<artifactId>rmi-common</artifactId>
-	<packaging>jar</packaging>
 
 	<build>
 
