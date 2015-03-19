@@ -21,6 +21,7 @@ EOF
 
 $javaCmd \
 	-Djava.security.policy=client.policy \
-	-jar ${jarFile}
+	-jar ${jarFile} \
+	"$*"
 
 cd - >/dev/null

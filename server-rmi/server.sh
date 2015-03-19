@@ -34,7 +34,8 @@ echo $(jps -v|grep RegistryImpl|awk '{print $1}')>$REGISTRY_PID
 
 $javaCmd \
 	-Djava.security.policy=server.policy \
-	-jar ${jarFile} &
+	-jar ${jarFile} \
+	"$*" &
 echo $! > $SERVER_PID
 
 wait $(cat $SERVER_PID)
