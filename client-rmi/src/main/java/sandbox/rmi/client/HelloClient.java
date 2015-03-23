@@ -1,5 +1,6 @@
 package sandbox.rmi.client;
 
+import sandbox.rmi.common.BusinessCheckedException;
 import sandbox.rmi.common.HelloRMI;
 import sandbox.rmi.common.Service;
 
@@ -10,10 +11,17 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 public class HelloClient {
 
 	public static void main(String[] args) {
+
+		String name = "john";
+		if (args.length > 0) {
+			name = args[0];
+		}
+
 		SecurityManager securityManager = System.getSecurityManager();
 		if (null == securityManager) {
 			System.setSecurityManager(new SecurityManager());
@@ -27,10 +35,11 @@ public class HelloClient {
 			}
 
 			HelloRMI server = (HelloRMI) registry.lookup(Service.getName());
-			System.out.println(server.getHello("john"));
+			System.out.println(server.getHello(name));
+			System.out.println(server.getHello(Arrays.asList("john", "bob"), null));
+			System.out.println(server.getHello(new String[]{"john", "bob"}));
 
-
-		} catch (RemoteException | NotBoundException e) {
+		} catch (RemoteException | NotBoundException | BusinessCheckedException e) {
 			throw new RuntimeException(e);
 		}
 	}
