@@ -1,6 +1,7 @@
 package sandbox.rmi.server;
 
 import sandbox.rmi.common.BusinessCheckedException;
+import sandbox.rmi.common.BusinessRuntimeException;
 import sandbox.rmi.common.HelloRMI;
 import sandbox.rmi.common.Service;
 
@@ -46,6 +47,7 @@ public class HelloServer implements HelloRMI, MsgPrinter {
 			throw new RuntimeException(e);
 		}
 
+		System.out.println("Server started");
 		while (!shutdown.get()) {
 			try {
 				Thread.sleep(1_000);
@@ -114,12 +116,6 @@ public class HelloServer implements HelloRMI, MsgPrinter {
 			throw new RuntimeException(e);
 		}
 		return String.format("hello %s", name);
-	}
-
-	public static class BusinessRuntimeException extends RuntimeException {
-		private BusinessRuntimeException(String message) {
-			super(message);
-		}
 	}
 
 }
